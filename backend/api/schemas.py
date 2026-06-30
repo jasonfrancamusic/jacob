@@ -30,3 +30,28 @@ class HealthResponse(BaseModel):
     status: str
     service: str
     version: str
+
+
+class MemoryCreateRequest(BaseModel):
+    key: str = Field(..., min_length=1)
+    value: str = Field(..., min_length=1)
+    category: str = Field(default="general")
+    importance: int = Field(default=3, ge=1, le=5)
+    authorized: bool = Field(default=True)
+    source: str = Field(default="manual")
+
+
+class MemoryResponse(BaseModel):
+    id: str
+    key: str
+    value: str
+    category: str
+    authorized: bool
+    importance: int
+    source: str
+    created_at: str
+    updated_at: str
+
+
+class MemoryDeleteResponse(BaseModel):
+    deleted: bool
