@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
+from uuid import uuid4
 
 
 class Intent(str, Enum):
@@ -20,6 +21,19 @@ class EnergyLevel(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
+
+
+class MemoryCategory(str, Enum):
+    """Seven memory categories for Jacob Memory Engine 0.1."""
+
+    CONVERSATIONAL = "conversational"
+    LONG_TERM = "long_term"
+    PROJECTS = "projects"
+    HABITS = "habits"
+    EMOTIONAL = "emotional"
+    SPIRITUAL = "spiritual"
+    DREAMS = "dreams"
+    GENERAL = "general"
 
 
 @dataclass
@@ -72,13 +86,17 @@ class LifeMap:
 
 @dataclass
 class MemoryRecord:
-    """Simple authorized memory record."""
+    """Authorized memory record owned by the partner."""
 
     key: str
     value: str
-    category: str = "general"
+    category: MemoryCategory = MemoryCategory.GENERAL
     authorized: bool = True
+    id: str = field(default_factory=lambda: str(uuid4()))
+    importance: int = 3
+    source: str = "manual"
     created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime = field(default_factory=datetime.utcnow)
 
 
 @dataclass
