@@ -3,37 +3,147 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jacob 0.1</title>
+    <title>Jacob OS — Command Center</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <section class="hero-card">
-        <div class="orb" aria-hidden="true"></div>
-        <p class="eyebrow">Jacob 0.1</p>
-        <h1>Bom dia, Jason.</h1>
-        <p class="subtitle">Um parceiro digital para clareza, memória e presença diária.</p>
-      </section>
+    <main class="os-window">
+      <aside class="sidebar">
+        <div class="presence-ring" aria-hidden="true"></div>
+        <nav class="nav-menu" aria-label="Navegação principal">
+          <a class="nav-item active" href="#">⌂ <span>Home</span></a>
+          <a class="nav-item" href="#">◌ <span>Conversa</span></a>
+          <a class="nav-item" href="#">◎ <span>Vida</span></a>
+          <a class="nav-item" href="#">▣ <span>Projetos</span></a>
+          <a class="nav-item" href="#">□ <span>Agenda</span></a>
+          <a class="nav-item" href="#">✦ <span>Insights</span></a>
+          <a class="nav-item" href="#">⚙ <span>Configurações</span></a>
+        </nav>
+        <footer class="sidebar-footer">
+          <strong>Jacob OS 0.1</strong>
+          <span>Transformando dados em direção.</span>
+        </footer>
+      </aside>
 
-      <section class="chat-card">
-        <div id="messages" class="messages" aria-live="polite">
-          <article class="message jacob">
-            <strong>Jacob</strong>
-            <p>Estou aqui. Escreva uma mensagem para iniciarmos.</p>
+      <section class="main-panel">
+        <header class="topbar">
+          <span>Jacob OS — Command Center</span>
+          <span>Jacob. A tecnologia que se torna presença.</span>
+        </header>
+
+        <section class="hero-grid">
+          <div class="briefing-block">
+            <p class="eyebrow">Bom dia, Jason.</p>
+            <h1>Vamos continuar de onde paramos.</h1>
+            <div class="day-meta">
+              <div>
+                <strong>30°C</strong>
+                <span>Boa Vista, RR</span>
+              </div>
+              <div>
+                <strong>06:42</strong>
+                <span>Você acordou</span>
+              </div>
+              <div>
+                <strong>Online</strong>
+                <span>Jacob Core</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="human-presence" aria-label="Representação visual do Jacob">
+            <div class="portrait-glow"></div>
+            <div class="portrait-head"></div>
+            <div class="portrait-shoulders"></div>
+            <div class="voice-wave"></div>
+            <span>Jacob está ouvindo.</span>
+          </div>
+        </section>
+
+        <section class="mission-grid">
+          <article class="card mission-card">
+            <p class="card-label">Missão do dia</p>
+            <h2>Finalizar o Memory Engine</h2>
+            <p>Nosso objetivo é transformar memória em continuidade, com consentimento e controle.</p>
+            <div class="progress-line"><span style="width: 45%"></span></div>
+            <small>Progresso da missão — 45%</small>
           </article>
-        </div>
 
-        <form id="chat-form" class="chat-form">
-          <input
-            id="message-input"
-            type="text"
-            placeholder="Ex.: Bom dia, Jacob."
-            autocomplete="off"
-            required
-          />
-          <button type="submit">Enviar</button>
-        </form>
+          <article class="card small-card">
+            <p class="card-label">Próxima ação</p>
+            <h3>Construir o Command Center</h3>
+            <span class="priority">● Prioridade alta</span>
+          </article>
+
+          <article class="card small-card">
+            <p class="card-label">Foco do dia</p>
+            <ul>
+              <li>Interface Jacob OS</li>
+              <li>Presence Engine 0.1</li>
+              <li>Testes com backend</li>
+            </ul>
+          </article>
+
+          <article class="card small-card">
+            <p class="card-label">Lembrete importante</p>
+            <p>Você rende melhor pela manhã. Aproveite este horário para trabalho profundo.</p>
+          </article>
+        </section>
+
+        <section class="conversation-panel">
+          <div id="messages" class="messages" aria-live="polite">
+            <article class="message jacob">
+              <strong>Jacob</strong>
+              <p>Estou aqui, Jason. Em que posso caminhar ao seu lado hoje?</p>
+            </article>
+          </div>
+
+          <form id="chat-form" class="chat-form">
+            <input
+              id="message-input"
+              type="text"
+              placeholder="Em que posso caminhar ao seu lado hoje?"
+              autocomplete="off"
+              required
+            />
+            <button type="submit" aria-label="Conversar com Jacob">➤</button>
+          </form>
+          <div class="quick-actions">
+            <button type="button" data-prompt="Bom dia, Jacob.">Morning Briefing</button>
+            <button type="button" data-prompt="O que é prioridade hoje?">Prioridade</button>
+            <button type="button" data-prompt="Como está minha vida em métricas?">Mapa da Vida</button>
+            <button type="button" data-prompt="Vamos planejar meu dia.">Planejar</button>
+          </div>
+        </section>
       </section>
+
+      <aside class="right-panel">
+        <section class="appearance-card card">
+          <p class="card-label">Aparência do Jacob</p>
+          <div class="toggle-row">
+            <button>Esfera</button>
+            <button class="selected">Humano</button>
+          </div>
+        </section>
+
+        <section class="life-card card">
+          <p class="card-label">Sua vida em uma olhada</p>
+          <div class="metric"><span>Energia</span><div><i style="width: 82%"></i></div><strong>82%</strong></div>
+          <div class="metric"><span>Saúde</span><div><i style="width: 76%"></i></div><strong>76%</strong></div>
+          <div class="metric"><span>Espiritualidade</span><div><i style="width: 90%"></i></div><strong>90%</strong></div>
+          <div class="metric"><span>Família</span><div><i style="width: 85%"></i></div><strong>85%</strong></div>
+          <div class="metric"><span>Finanças</span><div><i style="width: 72%"></i></div><strong>72%</strong></div>
+          <div class="metric"><span>Aprendizado</span><div><i style="width: 81%"></i></div><strong>81%</strong></div>
+          <button class="outline-button">Ver mapa completo →</button>
+        </section>
+
+        <section class="connection-card card">
+          <p class="card-label">Conexão ativa</p>
+          <strong>Jacob Core</strong>
+          <span>Todos os sistemas operacionais</span>
+          <em>100% online</em>
+        </section>
+      </aside>
     </main>
 
     <script src="app.js"></script>
