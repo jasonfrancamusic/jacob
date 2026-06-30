@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from api.schemas import ChatRequest, ChatResponse, HealthResponse, ReflectionResponse
 from jacob_core import __version__
@@ -11,6 +12,14 @@ app = FastAPI(
     title="Jacob Core API",
     description="First API layer for Jacob 0.1 — Personal AI Partner.",
     version=__version__,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 core = JacobCore()
