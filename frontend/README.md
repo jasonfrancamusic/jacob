@@ -2,18 +2,60 @@
 
 Frontend for Jacob 0.1.
 
-Initial goal:
+## Current status
 
-Create a simple web/mobile-first interface that feels like a digital presence, not a generic chatbot.
+A simple mobile-first HTML/CSS/JS frontend is connected to the Jacob Core API.
 
-Planned responsibilities:
+## Files
 
-- First conversation
-- Morning Briefing screen
-- Daily check-in
-- Memory consent UI
-- Settings and permissions
+```text
+frontend/
+  index.html
+  styles.css
+  app.js
+```
 
-Design source:
+## How to run
 
-Figma — Jacob 0.1 Cosmos Design System
+1. Start the backend API:
+
+```bash
+cd backend
+uvicorn app:app --reload
+```
+
+2. Open the frontend:
+
+You can open `frontend/index.html` directly in the browser.
+
+Recommended local server option:
+
+```bash
+cd frontend
+python -m http.server 5500
+```
+
+Then open:
+
+```text
+http://127.0.0.1:5500
+```
+
+## Test prompts
+
+```text
+Bom dia, Jacob.
+Como está minha vida em métricas?
+Estou cansado hoje.
+Vamos planejar a Sprint 002 do Projeto Jacob.
+```
+
+## Design direction
+
+The interface follows the Cosmos Design System:
+
+- Space-inspired.
+- Calm futuristic presence.
+- Glassmorphism.
+- Digital Multiverso identity.
+- Simple enough to work before becoming beautiful.
