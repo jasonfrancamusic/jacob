@@ -1,0 +1,2 @@
+# Jacob Core 0.1 currently uses only Python standard library.
+# Future dependencies will be added here.
