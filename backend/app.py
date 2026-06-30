@@ -1,12 +1,20 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.schemas import ChatRequest, ChatResponse, HealthResponse, ReflectionResponse
+from api.schemas import (
+    ChatRequest,
+    ChatResponse,
+    HealthResponse,
+    MemoryCreateRequest,
+    MemoryDeleteResponse,
+    MemoryResponse,
+    ReflectionResponse,
+)
 from jacob_core import __version__
 from jacob_core.core import JacobCore
-from jacob_core.models import PartnerMessage
+from jacob_core.models import MemoryCategory, MemoryRecord, PartnerMessage
 
 app = FastAPI(
     title="Jacob Core API",
@@ -23,6 +31,20 @@ app.add_middleware(
 )
 
 core = JacobCore()
+
+
+def serialize_memory(memory: MemoryRecord) -> MemoryResponse:
+    return MemoryResponse(
+        id=memory.id,
+        key=memory.key,
+        value=memory.value,
+        category=memory.category.value,
+        authorized=memory.authorized,
+        importance=memory.importance,
+        source=memory.source,
+        created_at=memory.created_at.isoformat(),
+        updated_at=memory.updated_at.isoformat(),
+    )
 
 
 @app.get("/health", response_model=HealthResponse)
@@ -42,12 +64,7 @@ def chat(request: ChatRequest) -> ChatResponse:
 
     suggested_memory = None
     if response.reflection.suggested_memory:
-        suggested_memory = {
-            "key": response.reflection.suggested_memory.key,
-            "value": response.reflection.suggested_memory.value,
-            "category": response.reflection.suggested_memory.category,
-            "authorized": response.reflection.suggested_memory.authorized,
-        }
+        suggested_memory = serialize_memory(response.reflection.suggested_memory).model_dump()
 
     return ChatResponse(
         text=response.text,
@@ -61,3 +78,35 @@ def chat(request: ChatRequest) -> ChatResponse:
         ),
         debug=response.debug,
     )
+
+
+@app.get("/memories", response_model=list[MemoryResponse])
+def list_memories(category: str | None = None) -> list[MemoryResponse]:
+    parsed_category = MemoryCategory(category) if category else None
+    return [serialize_memory(memory) for memory in core.memory_store.list_memories(parsed_category)]
+
+
+@app.post("/memories", response_model=MemoryResponse)
+def create_memory(request: MemoryCreateRequest) -> MemoryResponse:
+    if not request.authorized:
+        raise HTTPException(status_code=400, detail="Jacob cannot save unauthorized memory.")
+
+    try:
+        category = MemoryCategory(request.category)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Invalid memory category.") from exc
+
+    memory = MemoryRecord(
+        key=request.key,
+        value=request.value,
+        category=category,
+        authorized=request.authorized,
+        importance=request.importance,
+        source=request.source,
+    )
+    return serialize_memory(core.memory_store.add_memory(memory))
+
+
+@app.delete("/memories/{memory_id}", response_model=MemoryDeleteResponse)
+def delete_memory(memory_id: str) -> MemoryDeleteResponse:
+    return MemoryDeleteResponse(deleted=core.memory_store.delete_memory(memory_id))
