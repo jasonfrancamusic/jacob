@@ -1,0 +1,227 @@
+/* Jacob OS UX refinement layer
+   Purpose: improve first-screen experience, reduce title scale,
+   bring chat closer to the main hero, and improve responsiveness. */
+
+.os-window {
+  width: min(1720px, calc(100vw - 18px));
+  grid-template-columns: clamp(86px, 10vw, 170px) minmax(0, 1fr) clamp(280px, 23vw, 340px);
+}
+
+.main-panel {
+  padding-left: clamp(22px, 3vw, 50px);
+  padding-right: clamp(22px, 3vw, 50px);
+}
+
+.hero-grid {
+  min-height: 250px;
+  grid-template-columns: minmax(360px, 0.92fr) minmax(280px, 0.62fr);
+  gap: clamp(18px, 3vw, 34px);
+}
+
+h1 {
+  max-width: 720px;
+  font-size: clamp(2.35rem, 3.6vw, 4.25rem);
+  line-height: 1.03;
+}
+
+h2 {
+  font-size: clamp(1.25rem, 1.8vw, 2rem);
+}
+
+.day-meta {
+  margin-top: 26px;
+  gap: clamp(18px, 3vw, 36px);
+}
+
+.day-meta div {
+  min-width: 120px;
+  padding-right: 24px;
+}
+
+.day-meta strong {
+  font-size: clamp(1.2rem, 1.8vw, 1.55rem);
+}
+
+.human-presence {
+  min-height: 245px;
+}
+
+.portrait-glow {
+  width: min(290px, 78%);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.portrait-head {
+  width: clamp(86px, 9vw, 118px);
+  height: clamp(102px, 11vw, 138px);
+}
+
+.portrait-shoulders {
+  width: min(300px, 90%);
+  height: 112px;
+}
+
+.conversation-panel {
+  margin: 10px 0 18px;
+  border-color: rgba(56, 189, 248, 0.26);
+  box-shadow: 0 0 34px rgba(56, 189, 248, 0.08);
+}
+
+.conversation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.status-pill {
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 13px;
+  background: rgba(34, 197, 94, 0.06);
+  white-space: nowrap;
+}
+
+.messages {
+  max-height: 108px;
+}
+
+input {
+  min-height: 54px;
+}
+
+.chat-form button {
+  width: 58px;
+  min-width: 58px;
+}
+
+.mission-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.mission-card {
+  grid-column: span 2;
+}
+
+.small-card {
+  min-height: 150px;
+}
+
+@media (max-width: 1320px) {
+  .os-window {
+    grid-template-columns: 86px minmax(0, 1fr) 300px;
+  }
+
+  .nav-item span,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .main-panel {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .mission-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1040px) {
+  .os-window {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .right-panel {
+    grid-column: 2;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding-top: 22px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding-top: 24px;
+  }
+
+  .human-presence {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 760px) {
+  .os-window {
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .main-panel {
+    padding: 0 16px 22px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 14px 0;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 11vw, 3.2rem);
+  }
+
+  .day-meta div {
+    border-right: 0;
+    min-width: 95px;
+  }
+
+  .conversation-header {
+    flex-direction: column;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-card {
+    grid-column: auto;
+  }
+
+  .right-panel {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 460px) {
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .human-presence {
+    display: none;
+  }
+}
