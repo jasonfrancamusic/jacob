@@ -1,2 +1,4 @@
-# Jacob Core 0.1 currently uses only Python standard library.
-# Future dependencies will be added here.
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.8.0
+pytest>=8.0.0
