@@ -3,6 +3,7 @@ const API_URL = "http://127.0.0.1:8000/chat";
 const form = document.querySelector("#chat-form");
 const input = document.querySelector("#message-input");
 const messages = document.querySelector("#messages");
+const quickActions = document.querySelectorAll("[data-prompt]");
 
 function addMessage(author, text, type) {
   const article = document.createElement("article");
@@ -39,11 +40,8 @@ async function sendMessage(message) {
   return response.json();
 }
 
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const message = input.value.trim();
-  if (!message) return;
+async function handleMessage(message) {
+  if (!message.trim()) return;
 
   addMessage("Jason", message, "user");
   input.value = "";
@@ -65,4 +63,15 @@ form.addEventListener("submit", async (event) => {
     form.querySelector("button").disabled = false;
     input.focus();
   }
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  await handleMessage(input.value.trim());
+});
+
+quickActions.forEach((button) => {
+  button.addEventListener("click", async () => {
+    await handleMessage(button.dataset.prompt);
+  });
 });
