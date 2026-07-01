@@ -7,14 +7,37 @@ function presenceGreeting() {
   return "Boa noite, Jason.";
 }
 
-function speakJacob(text) {
-  if (!jacobVoiceEnabled || !("speechSynthesis" in window)) return;
+function unlockJacobVoice() {
+  if (!("speechSynthesis" in window)) return false;
+  window.speechSynthesis.cancel();
+  const test = new SpeechSynthesisUtterance(" ");
+  test.lang = "pt-BR";
+  test.volume = 0;
+  window.speechSynthesis.speak(test);
+  return true;
+}
+
+function pickPortugueseVoice() {
+  if (!("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find((voice) => voice.lang?.toLowerCase().startsWith("pt-br"))
+    || voices.find((voice) => voice.lang?.toLowerCase().startsWith("pt"))
+    || voices[0]
+    || null;
+}
+
+function speakJacob(text, force = false) {
+  if ((!jacobVoiceEnabled && !force) || !("speechSynthesis" in window)) return false;
+  window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "pt-BR";
+  const voice = pickPortugueseVoice();
+  if (voice) utterance.voice = voice;
+  utterance.lang = voice?.lang || "pt-BR";
   utterance.rate = 0.92;
   utterance.pitch = 0.9;
-  window.speechSynthesis.cancel();
+  utterance.volume = 1;
   window.speechSynthesis.speak(utterance);
+  return true;
 }
 
 function loadAssetOnce(type, url) {
@@ -47,18 +70,33 @@ function createPresenceControls() {
   controls.className = "presence-controls";
   controls.innerHTML = `
     <button id="presence-replay" type="button">Repetir presença</button>
+    <button id="voice-test" type="button">Testar voz</button>
     <button id="voice-toggle" type="button">Voz: ${jacobVoiceEnabled ? "Ligada" : "Desligada"}</button>
   `;
   document.body.appendChild(controls);
 
   const voiceButton = document.querySelector("#voice-toggle");
+  const testButton = document.querySelector("#voice-test");
+
   voiceButton?.classList.toggle("active", jacobVoiceEnabled);
   voiceButton?.addEventListener("click", () => {
+    unlockJacobVoice();
     jacobVoiceEnabled = !jacobVoiceEnabled;
     localStorage.setItem("jacob_voice_enabled", String(jacobVoiceEnabled));
     voiceButton.textContent = `Voz: ${jacobVoiceEnabled ? "Ligada" : "Desligada"}`;
     voiceButton.classList.toggle("active", jacobVoiceEnabled);
-    if (jacobVoiceEnabled) speakJacob("Voz do Jacob ativada.");
+    if (jacobVoiceEnabled) speakJacob("Voz do Jacob ativada. Se você está ouvindo esta frase, a voz está funcionando.", true);
+  });
+
+  testButton?.addEventListener("click", () => {
+    unlockJacobVoice();
+    jacobVoiceEnabled = true;
+    localStorage.setItem("jacob_voice_enabled", "true");
+    if (voiceButton) {
+      voiceButton.textContent = "Voz: Ligada";
+      voiceButton.classList.add("active");
+    }
+    speakJacob("Teste de voz do Jacob. Estou falando pelo navegador agora.", true);
   });
 
   document.querySelector("#presence-replay")?.addEventListener("click", () => runPresenceRitual(true));
@@ -88,27 +126,26 @@ async function runPresenceRitual(force = false) {
   const ritual = createPresenceRitual();
   const line = document.querySelector("#presence-line");
   const greeting = presenceGreeting();
-  const sequence = [
-    greeting,
-    "Eu estava preparando o ambiente premium.",
-    "Voice Engine, presença, memória e histórico estão alinhados.",
-    "Você já pode conversar comigo por voz."
-  ];
+  const sequence = [greeting, "Ambiente premium pronto.", "Voice Engine em modo de teste.", "Use o botão Testar voz para liberar o áudio."];
 
   ritual.classList.remove("hidden");
 
   for (const text of sequence) {
     if (line) line.textContent = text;
     speakJacob(text);
-    await new Promise((resolve) => setTimeout(resolve, 1450));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
   }
 
   ritual.classList.add("hidden");
   sessionStorage.setItem("jacob_presence_shown", "true");
 
   if (typeof addMessage === "function") {
-    addMessage("Jacob", `${greeting} Voice Engine 1.0 ativo. Clique em Conversar e fale comigo.`, "jacob");
+    addMessage("Jacob", `${greeting} Voice Engine em modo de teste. Clique em Testar voz para confirmar o áudio.`, "jacob");
   }
+}
+
+if ("speechSynthesis" in window) {
+  window.speechSynthesis.onvoiceschanged = pickPortugueseVoice;
 }
 
 loadExtraModules();
