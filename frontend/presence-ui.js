@@ -38,6 +38,8 @@ function loadExtraModules() {
   loadAssetOnce("js", "development-mode.js");
   loadAssetOnce("css", "conversation-history.css");
   loadAssetOnce("js", "conversation-history.js");
+  loadAssetOnce("css", "voice-engine.css");
+  loadAssetOnce("js", "voice-engine.js");
 }
 
 function createPresenceControls() {
@@ -89,8 +91,8 @@ async function runPresenceRitual(force = false) {
   const sequence = [
     greeting,
     "Eu estava preparando o ambiente premium.",
-    "Presença, memória, histórico e desenvolvimento estão alinhados.",
-    "Vamos continuar com menos ruído e mais direção."
+    "Voice Engine, presença, memória e histórico estão alinhados.",
+    "Você já pode conversar comigo por voz."
   ];
 
   ritual.classList.remove("hidden");
@@ -105,7 +107,7 @@ async function runPresenceRitual(force = false) {
   sessionStorage.setItem("jacob_presence_shown", "true");
 
   if (typeof addMessage === "function") {
-    addMessage("Jacob", `${greeting} Experiência premium ativada. Estou aqui para trazer presença, clareza e direção.`, "jacob");
+    addMessage("Jacob", `${greeting} Voice Engine 1.0 ativo. Clique em Conversar e fale comigo.`, "jacob");
   }
 }
 
