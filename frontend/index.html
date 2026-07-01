@@ -8,20 +8,20 @@
     <link rel="stylesheet" href="responsive-fixes.css" />
   </head>
   <body>
-    <main class="os-window">
+    <main class="os-window" data-avatar="human">
       <aside class="sidebar">
         <div class="brand-block">
           <div class="presence-ring" aria-hidden="true"></div>
           <div><strong>JACOB OS</strong><span>v1.0.0</span></div>
         </div>
         <nav class="nav-menu" aria-label="Navegação principal">
-          <a class="nav-item active" href="#">⌂ <span>Home</span></a>
-          <a class="nav-item" href="#conversation">◌ <span>Conversa</span></a>
-          <a class="nav-item" href="#">◎ <span>Vida</span></a>
-          <a class="nav-item" href="#">▣ <span>Projetos</span></a>
-          <a class="nav-item" href="#">□ <span>Agenda</span></a>
-          <a class="nav-item" href="#">✦ <span>Insights</span></a>
-          <a class="nav-item" href="#">⚙ <span>Configurações</span></a>
+          <button class="nav-item active" data-page="home">⌂ <span>Home</span></button>
+          <button class="nav-item" data-page="conversation">◌ <span>Conversa</span></button>
+          <button class="nav-item" data-page="life">◎ <span>Vida</span></button>
+          <button class="nav-item" data-page="projects">▣ <span>Projetos</span></button>
+          <button class="nav-item" data-page="agenda">□ <span>Agenda</span></button>
+          <button class="nav-item" data-page="insights">✦ <span>Insights</span></button>
+          <button class="nav-item" data-page="settings">⚙ <span>Configurações</span></button>
         </nav>
         <footer class="sidebar-footer">
           <strong>Jacob OS 0.1</strong>
@@ -35,80 +35,103 @@
           <span>Jacob. A tecnologia que se torna presença.</span>
         </header>
 
-        <section class="hero-grid">
-          <div class="briefing-block">
-            <p class="eyebrow">Bom dia, Jason.</p>
-            <h1 id="hero-title">Bom dia, <span>Jason.</span></h1>
-            <p class="date-line">Terça-feira, 30 de junho de 2026</p>
-            <div class="day-meta compact-meta">
-              <div><strong>☼ 30°C</strong><span>Boa Vista, RR</span></div>
-              <div><strong>◷ 06:42</strong><span>Você acordou</span></div>
-              <div><strong>◉ Online</strong><span>Jacob Core</span></div>
+        <section class="page active" id="page-home">
+          <section class="first-fold">
+            <div class="briefing-block">
+              <p id="greeting-eyebrow" class="eyebrow">Boa noite, Jason.</p>
+              <h1 id="hero-title">Boa noite, <span>Jason.</span></h1>
+              <p id="date-line" class="date-line">Carregando horário local...</p>
+              <div class="day-meta compact-meta">
+                <div><strong id="weather-value">☼ --°C</strong><span id="weather-label">Boa Vista, RR</span></div>
+                <div><strong id="time-value">◷ --:--</strong><span>Horário local</span></div>
+                <div><strong id="core-value">◉ Verificando</strong><span>Jacob Core</span></div>
+              </div>
+              <article class="card mission-card hero-mission">
+                <p class="card-label">Missão do dia</p>
+                <h2 id="mission-title">Continuar a Sprint 003</h2>
+                <p id="mission-description">Nosso objetivo é construir a interface do Centro de Comando do Jacob OS.</p>
+                <div class="progress-row"><span>Progresso da missão</span><strong id="mission-progress-label">45%</strong></div>
+                <div class="progress-line"><span id="mission-progress-bar" style="width: 45%"></span></div>
+              </article>
             </div>
-            <article class="card mission-card hero-mission">
-              <p class="card-label">Missão do dia</p>
-              <h2 id="mission-title">Continuar a Sprint 003</h2>
-              <p id="mission-description">Nosso objetivo é construir a interface do Centro de Comando do Jacob OS.</p>
-              <div class="progress-row"><span>Progresso da missão</span><strong id="mission-progress-label">45%</strong></div>
-              <div class="progress-line"><span id="mission-progress-bar" style="width: 45%"></span></div>
-            </article>
-          </div>
 
-          <div class="human-presence" aria-label="Representação visual do Jacob">
-            <div class="portrait-glow"></div>
-            <div class="portrait-head"></div>
-            <div class="portrait-shoulders"></div>
-            <div class="voice-wave"></div>
-            <span>● Jacob está ouvindo.</span>
-          </div>
+            <div class="presence-and-chat">
+              <div class="human-presence" aria-label="Representação visual do Jacob">
+                <div class="portrait-glow"></div>
+                <div class="portrait-head"></div>
+                <div class="portrait-shoulders"></div>
+                <div class="voice-wave"></div>
+                <span>● Jacob está ouvindo.</span>
+              </div>
+
+              <section id="conversation" class="conversation-panel priority-chat">
+                <div class="conversation-header">
+                  <div><p class="card-label">Conversa com Jacob</p></div>
+                  <span id="connection-status" class="status-pill">● Verificando</span>
+                </div>
+
+                <div id="messages" class="messages" aria-live="polite">
+                  <article class="message jacob">
+                    <div class="message-header"><strong>Jacob</strong><span>--:--</span></div>
+                    <p>Estou aqui, Jason. Vamos construir com calma, simetria e direção.</p>
+                  </article>
+                </div>
+
+                <form id="chat-form" class="chat-form">
+                  <input id="message-input" type="text" placeholder="Em que posso caminhar ao seu lado hoje?" autocomplete="off" required />
+                  <button type="submit" aria-label="Conversar com Jacob">➤</button>
+                </form>
+                <div class="quick-actions">
+                  <button type="button" data-prompt="Resuma meu dia e diga o próximo passo.">Resumo</button>
+                  <button type="button" data-prompt="O que é prioridade hoje?">Prioridade</button>
+                  <button type="button" data-prompt="Como está minha vida em métricas?">Mapa da Vida</button>
+                  <button type="button" data-prompt="Vamos planejar meu dia.">Planejar</button>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="mission-grid">
+            <article class="card small-card">
+              <p class="card-label">Próxima ação</p>
+              <h3 id="next-action-title">Construir o Command Center</h3>
+              <span id="next-action-priority" class="priority">● Prioridade alta</span>
+            </article>
+            <article class="card small-card">
+              <p class="card-label">Foco do dia</p>
+              <ul id="focus-list"><li>Interface Jacob OS</li><li>Presence Engine</li><li>Testes com backend</li></ul>
+            </article>
+            <article class="card small-card wide-note">
+              <p class="card-label">Lembrete importante</p>
+              <p id="reminder-text">Você rende melhor pela manhã. Aproveite este horário para trabalho profundo.</p>
+            </article>
+          </section>
         </section>
 
-        <section id="conversation" class="conversation-panel priority-chat">
-          <div class="conversation-header">
-            <div><p class="card-label">Conversa com Jacob</p></div>
-            <span id="connection-status" class="status-pill">● Verificando</span>
-          </div>
-
-          <div id="messages" class="messages" aria-live="polite">
-            <article class="message jacob">
-              <div class="message-header"><strong>Jacob</strong><span>06:42</span></div>
-              <p>Estou aqui, Jason. Hoje nossa missão é finalizar o Memory Engine e evoluir o Project Presence.</p>
-            </article>
-          </div>
-
-          <form id="chat-form" class="chat-form">
-            <input id="message-input" type="text" placeholder="Em que posso caminhar ao seu lado hoje?" autocomplete="off" required />
-            <button type="submit" aria-label="Conversar com Jacob">➤</button>
-          </form>
-          <div class="quick-actions">
-            <button type="button" data-prompt="Bom dia, Jacob.">Resumir meu dia de ontem</button>
-            <button type="button" data-prompt="O que é prioridade hoje?">O que é prioridade hoje?</button>
-            <button type="button" data-prompt="Como está minha vida em métricas?">Como está minha vida?</button>
-            <button type="button" data-prompt="Vamos planejar meu dia.">Planejar meu dia</button>
-          </div>
+        <section class="page" id="page-conversation">
+          <article class="card full-page-card"><p class="card-label">Conversa</p><h2>Histórico e diálogo contínuo</h2><p>Esta página vai concentrar a conversa longa com o Jacob. Por enquanto, use o chat da Home.</p></article>
         </section>
-
-        <section class="mission-grid">
-          <article class="card small-card">
-            <p class="card-label">Próxima ação</p>
-            <h3 id="next-action-title">Construir o Command Center</h3>
-            <span id="next-action-priority" class="priority">● Prioridade alta</span>
-          </article>
-          <article class="card small-card">
-            <p class="card-label">Foco do dia</p>
-            <ul id="focus-list"><li>Interface Jacob OS</li><li>Presence Engine</li><li>Testes com backend</li></ul>
-          </article>
-          <article class="card small-card wide-note">
-            <p class="card-label">Lembrete importante</p>
-            <p id="reminder-text">Você rende melhor pela manhã. Aproveite este horário para trabalho profundo.</p>
-          </article>
+        <section class="page" id="page-life">
+          <article class="card full-page-card"><p class="card-label">Vida</p><h2>Mapa da Vida</h2><p>Saúde, família, espiritualidade, finanças, aprendizado e legado serão acompanhados aqui.</p></article>
+        </section>
+        <section class="page" id="page-projects">
+          <article class="card full-page-card"><p class="card-label">Projetos</p><h2>Projetos ativos</h2><p>Jacob OS, Digital Multiverso, Damas no Multiverso, PMRR e Investimentos.</p></article>
+        </section>
+        <section class="page" id="page-agenda">
+          <article class="card full-page-card"><p class="card-label">Agenda</p><h2>Agenda inteligente</h2><p>Em breve: leitura de compromissos e planejamento automático do dia.</p></article>
+        </section>
+        <section class="page" id="page-insights">
+          <article class="card full-page-card"><p class="card-label">Insights</p><h2>Direção a partir de dados</h2><p>O Jacob vai transformar dados em recomendações práticas.</p></article>
+        </section>
+        <section class="page" id="page-settings">
+          <article class="card full-page-card"><p class="card-label">Configurações</p><h2>Preferências do Jacob</h2><p>Aparência, voz, memória, permissões e integrações serão configuradas aqui.</p></article>
         </section>
       </section>
 
       <aside class="right-panel">
         <section class="appearance-card card">
           <p class="card-label">Aparência do Jacob</p>
-          <div class="toggle-row"><button>Esfera</button><button class="selected">Humano</button></div>
+          <div class="toggle-row"><button id="sphere-mode" type="button">Esfera</button><button id="human-mode" type="button" class="selected">Humano</button></div>
         </section>
         <section class="life-card card">
           <p class="card-label">Sua vida em uma olhada</p>
@@ -118,7 +141,7 @@
           <div class="metric"><span>Família</span><div><i style="width: 85%"></i></div><strong>85%</strong><small>Momento especial hoje.</small></div>
           <div class="metric"><span>Finanças</span><div><i style="width: 72%"></i></div><strong>72%</strong><small>Sem movimentações.</small></div>
           <div class="metric"><span>Aprendizado</span><div><i style="width: 81%"></i></div><strong>81%</strong><small>Continue assim!</small></div>
-          <button class="outline-button">Ver mapa completo →</button>
+          <button class="outline-button" type="button" data-page-jump="life">Ver mapa completo →</button>
         </section>
         <section class="connection-card card">
           <p class="card-label">Conexão ativa</p>
