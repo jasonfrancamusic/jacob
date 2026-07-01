@@ -11,7 +11,17 @@ function createVoicePanel() {
     <button id="voice-talk" type="button">🎤 Conversar</button>
     <span id="voice-status">Voice Engine pronto</span>
   `;
-  document.body.appendChild(panel);
+
+  const chatForm = document.querySelector("#chat-form");
+  const conversationPanel = document.querySelector("#conversation");
+  if (chatForm?.parentNode) {
+    chatForm.parentNode.insertBefore(panel, chatForm.nextSibling);
+  } else if (conversationPanel) {
+    conversationPanel.appendChild(panel);
+  } else {
+    document.body.appendChild(panel);
+  }
+
   document.querySelector("#voice-talk")?.addEventListener("click", toggleVoiceRecognition);
 }
 
