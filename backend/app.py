@@ -67,6 +67,15 @@ def serialize_memory(memory: MemoryRecord) -> MemoryResponse:
     )
 
 
+def recent_conversation_context(limit: int = 12) -> str:
+    messages = conversation_history.list_messages(limit=limit)
+    lines = []
+    for message in messages:
+        role = "Jason" if message.role == "user" else "Jacob"
+        lines.append(f"{role}: {message.content}")
+    return "\n".join(lines)
+
+
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
     return HealthResponse(status="ok", service="jacob-core-api", version=__version__)
@@ -131,6 +140,7 @@ def create_knowledge(title: str, summary: str, topic: str = "general", source: s
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest) -> ChatResponse:
+    context = recent_conversation_context(limit=12)
     conversation_history.add_message("user", request.message)
 
     daily_briefing = brain.daily_briefing(partner_name=request.partner_name)
@@ -138,6 +148,7 @@ def chat(request: ChatRequest) -> ChatResponse:
         partner_name=request.partner_name,
         message=request.message,
         briefing=daily_briefing,
+        conversation_context=context,
     )
 
     conversation_history.add_message("assistant", cognitive_response.text)
@@ -150,7 +161,7 @@ def chat(request: ChatRequest) -> ChatResponse:
             helped=True,
             should_follow_up=True,
             suggested_memory=None,
-            notes="Response generated through Cognitive Gateway.",
+            notes="Response generated through Cognitive Gateway with recent conversation context.",
         ),
         debug={
             "provider": cognitive_response.provider,
