@@ -14,9 +14,11 @@ from api.schemas import (
 )
 from jacob_brain import JacobBrain
 from jacob_brain.cognitive_gateway import CognitiveGateway
+from jacob_brain.timeline import TimelineEngine, TimelineEvent
 from jacob_core import __version__
 from jacob_core.core import JacobCore
-from jacob_core.models import Intent, MemoryCategory, MemoryRecord, PartnerMessage, Reflection
+from jacob_core.models import Intent, MemoryCategory, MemoryRecord
+from jacob_guardian import JacobGuardian
 
 app = FastAPI(
     title="Jacob Core API",
@@ -35,6 +37,8 @@ app.add_middleware(
 core = JacobCore()
 brain = JacobBrain(core.memory_store)
 cognitive_gateway = CognitiveGateway(core.memory_store)
+guardian = JacobGuardian(core.memory_store)
+timeline = TimelineEngine()
 
 
 def serialize_memory(memory: MemoryRecord) -> MemoryResponse:
@@ -58,7 +62,25 @@ def health() -> HealthResponse:
 
 @app.get("/briefing")
 def briefing(partner_name: str = "Jason") -> dict:
-    return brain.daily_briefing(partner_name=partner_name).as_dict()
+    payload = brain.daily_briefing(partner_name=partner_name).as_dict()
+    payload["guardian"] = guardian.briefing_notes()
+    return payload
+
+
+@app.get("/guardian")
+def guardian_status() -> dict:
+    return guardian.briefing_notes()
+
+
+@app.get("/timeline")
+def list_timeline() -> dict:
+    return {"events": [event.as_dict() for event in timeline.list_events()]}
+
+
+@app.post("/timeline")
+def create_timeline_event(title: str, description: str, category: str = "development") -> dict:
+    event = timeline.add_event(TimelineEvent(title=title, description=description, category=category))
+    return event.as_dict()
 
 
 @app.post("/chat", response_model=ChatResponse)
