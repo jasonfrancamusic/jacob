@@ -13,9 +13,10 @@ from api.schemas import (
     ReflectionResponse,
 )
 from jacob_brain import JacobBrain
+from jacob_brain.cognitive_gateway import CognitiveGateway
 from jacob_core import __version__
 from jacob_core.core import JacobCore
-from jacob_core.models import MemoryCategory, MemoryRecord, PartnerMessage
+from jacob_core.models import Intent, MemoryCategory, MemoryRecord, PartnerMessage, Reflection
 
 app = FastAPI(
     title="Jacob Core API",
@@ -33,6 +34,7 @@ app.add_middleware(
 
 core = JacobCore()
 brain = JacobBrain(core.memory_store)
+cognitive_gateway = CognitiveGateway(core.memory_store)
 
 
 def serialize_memory(memory: MemoryRecord) -> MemoryResponse:
@@ -61,29 +63,28 @@ def briefing(partner_name: str = "Jason") -> dict:
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest) -> ChatResponse:
-    response = core.handle(
-        PartnerMessage(
-            partner_name=request.partner_name,
-            content=request.message,
-            metadata=request.metadata,
-        )
+    daily_briefing = brain.daily_briefing(partner_name=request.partner_name)
+    cognitive_response = cognitive_gateway.answer(
+        partner_name=request.partner_name,
+        message=request.message,
+        briefing=daily_briefing,
     )
 
-    suggested_memory = None
-    if response.reflection.suggested_memory:
-        suggested_memory = serialize_memory(response.reflection.suggested_memory).model_dump()
-
     return ChatResponse(
-        text=response.text,
-        intent=response.intent.value,
-        specialist_name=response.specialist_name,
+        text=cognitive_response.text,
+        intent=Intent.GENERAL_CONVERSATION.value,
+        specialist_name="Cognitive Gateway",
         reflection=ReflectionResponse(
-            helped=response.reflection.helped,
-            should_follow_up=response.reflection.should_follow_up,
-            suggested_memory=suggested_memory,
-            notes=response.reflection.notes,
+            helped=True,
+            should_follow_up=True,
+            suggested_memory=None,
+            notes="Response generated through Cognitive Gateway.",
         ),
-        debug=response.debug,
+        debug={
+            "provider": cognitive_response.provider,
+            "model": cognitive_response.model,
+            "used_fallback": cognitive_response.used_fallback,
+        },
     )
 
 
