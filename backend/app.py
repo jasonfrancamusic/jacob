@@ -12,6 +12,7 @@ from api.schemas import (
     MemoryResponse,
     ReflectionResponse,
 )
+from jacob_brain import JacobBrain
 from jacob_core import __version__
 from jacob_core.core import JacobCore
 from jacob_core.models import MemoryCategory, MemoryRecord, PartnerMessage
@@ -31,6 +32,7 @@ app.add_middleware(
 )
 
 core = JacobCore()
+brain = JacobBrain(core.memory_store)
 
 
 def serialize_memory(memory: MemoryRecord) -> MemoryResponse:
@@ -50,6 +52,11 @@ def serialize_memory(memory: MemoryRecord) -> MemoryResponse:
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
     return HealthResponse(status="ok", service="jacob-core-api", version=__version__)
+
+
+@app.get("/briefing")
+def briefing(partner_name: str = "Jason") -> dict:
+    return brain.daily_briefing(partner_name=partner_name).as_dict()
 
 
 @app.post("/chat", response_model=ChatResponse)
