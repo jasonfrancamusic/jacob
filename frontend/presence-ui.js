@@ -33,6 +33,7 @@ function loadAssetOnce(type, url) {
 }
 
 function loadExtraModules() {
+  loadAssetOnce("css", "premium-polish.css");
   loadAssetOnce("css", "development-mode.css");
   loadAssetOnce("js", "development-mode.js");
   loadAssetOnce("css", "conversation-history.css");
@@ -87,9 +88,9 @@ async function runPresenceRitual(force = false) {
   const greeting = presenceGreeting();
   const sequence = [
     greeting,
-    "Eu estava preparando o ambiente.",
-    "Guardian, Timeline, Memory, Conversation History e Development Mode estão prontos para evoluir.",
-    "Vamos continuar de onde paramos."
+    "Eu estava preparando o ambiente premium.",
+    "Presença, memória, histórico e desenvolvimento estão alinhados.",
+    "Vamos continuar com menos ruído e mais direção."
   ];
 
   ritual.classList.remove("hidden");
@@ -104,7 +105,7 @@ async function runPresenceRitual(force = false) {
   sessionStorage.setItem("jacob_presence_shown", "true");
 
   if (typeof addMessage === "function") {
-    addMessage("Jacob", `${greeting} Presence Engine 2.0 ativo. Estou aqui e pronto para continuar.`, "jacob");
+    addMessage("Jacob", `${greeting} Experiência premium ativada. Estou aqui para trazer presença, clareza e direção.`, "jacob");
   }
 }
 
