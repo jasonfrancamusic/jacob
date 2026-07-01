@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -21,6 +22,12 @@ from jacob_core.core import JacobCore
 from jacob_core.models import Intent, MemoryCategory, MemoryRecord
 from jacob_guardian import JacobGuardian
 from jacob_knowledge import KnowledgeCore, KnowledgeRecord
+from jacob_voice import VoiceEngine
+
+
+class VoiceRequest(BaseModel):
+    text: str
+
 
 app = FastAPI(
     title="Jacob Core API",
@@ -43,6 +50,7 @@ guardian = JacobGuardian(core.memory_store)
 timeline = TimelineEngine()
 conversation_history = ConversationHistory()
 knowledge_core = KnowledgeCore()
+voice_engine = VoiceEngine()
 
 
 def serialize_memory(memory: MemoryRecord) -> MemoryResponse:
@@ -69,6 +77,11 @@ def briefing(partner_name: str = "Jason") -> dict:
     payload = brain.daily_briefing(partner_name=partner_name).as_dict()
     payload["guardian"] = guardian.briefing_notes()
     return payload
+
+
+@app.post("/voice/speak")
+def speak(request: VoiceRequest) -> dict:
+    return voice_engine.synthesize(request.text).as_dict()
 
 
 @app.get("/guardian")
