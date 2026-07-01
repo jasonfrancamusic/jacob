@@ -110,6 +110,8 @@ function loadAssetOnce(type, url) {
 function loadExtraModules() {
   loadAssetOnce("css", "premium-polish.css");
   loadAssetOnce("css", "chat-polish.css");
+  loadAssetOnce("css", "ambient-presence.css");
+  loadAssetOnce("js", "ambient-presence.js");
   loadAssetOnce("css", "development-mode.css");
   loadAssetOnce("js", "development-mode.js");
   loadAssetOnce("css", "conversation-history.css");
@@ -181,9 +183,9 @@ async function runPresenceRitual(force = false) {
   const greeting = presenceGreeting();
   const sequence = [
     greeting,
-    "Voice Identity está em modo premium.",
-    "Agora vou esperar cada fala terminar antes de avançar.",
-    "Se você quiser usar a voz Will, coloque o Voice ID dela no arquivo de configuração."
+    "Ambient Presence está ativo.",
+    "Agora o tempo, a temperatura e a presença visual acompanham o momento.",
+    "Menos ruído. Mais direção."
   ];
 
   ritual.classList.remove("hidden");
@@ -198,7 +200,7 @@ async function runPresenceRitual(force = false) {
   sessionStorage.setItem("jacob_presence_shown", "true");
 
   if (typeof addMessage === "function") {
-    addMessage("Jacob", `${greeting} Voz configurada para falar sempre que possível.`, "jacob");
+    addMessage("Jacob", `${greeting} Ambient Presence ativo: segundos, data e atmosfera dinâmica configurados.`, "jacob");
   }
 }
 
