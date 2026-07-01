@@ -12,10 +12,7 @@
       <aside class="sidebar">
         <div class="brand-block">
           <div class="presence-ring" aria-hidden="true"></div>
-          <div>
-            <strong>JACOB OS</strong>
-            <span>v1.0.0</span>
-          </div>
+          <div><strong>JACOB OS</strong><span>v1.0.0</span></div>
         </div>
         <nav class="nav-menu" aria-label="Navegação principal">
           <a class="nav-item active" href="#">⌂ <span>Home</span></a>
@@ -41,7 +38,7 @@
         <section class="hero-grid">
           <div class="briefing-block">
             <p class="eyebrow">Bom dia, Jason.</p>
-            <h1>Bom dia, <span>Jason.</span></h1>
+            <h1 id="hero-title">Bom dia, <span>Jason.</span></h1>
             <p class="date-line">Terça-feira, 30 de junho de 2026</p>
             <div class="day-meta compact-meta">
               <div><strong>☼ 30°C</strong><span>Boa Vista, RR</span></div>
@@ -50,10 +47,10 @@
             </div>
             <article class="card mission-card hero-mission">
               <p class="card-label">Missão do dia</p>
-              <h2>Continuar a Sprint 003</h2>
-              <p>Nosso objetivo é construir a interface do Centro de Comando do Jacob OS.</p>
-              <div class="progress-row"><span>Progresso da missão</span><strong>45%</strong></div>
-              <div class="progress-line"><span style="width: 45%"></span></div>
+              <h2 id="mission-title">Continuar a Sprint 003</h2>
+              <p id="mission-description">Nosso objetivo é construir a interface do Centro de Comando do Jacob OS.</p>
+              <div class="progress-row"><span>Progresso da missão</span><strong id="mission-progress-label">45%</strong></div>
+              <div class="progress-line"><span id="mission-progress-bar" style="width: 45%"></span></div>
             </article>
           </div>
 
@@ -68,9 +65,7 @@
 
         <section id="conversation" class="conversation-panel priority-chat">
           <div class="conversation-header">
-            <div>
-              <p class="card-label">Conversa com Jacob</p>
-            </div>
+            <div><p class="card-label">Conversa com Jacob</p></div>
             <span id="connection-status" class="status-pill">● Verificando</span>
           </div>
 
@@ -96,16 +91,16 @@
         <section class="mission-grid">
           <article class="card small-card">
             <p class="card-label">Próxima ação</p>
-            <h3>Construir o Command Center</h3>
-            <span class="priority">● Prioridade alta</span>
+            <h3 id="next-action-title">Construir o Command Center</h3>
+            <span id="next-action-priority" class="priority">● Prioridade alta</span>
           </article>
           <article class="card small-card">
             <p class="card-label">Foco do dia</p>
-            <ul><li>Interface Jacob OS</li><li>Presence Engine</li><li>Testes com backend</li></ul>
+            <ul id="focus-list"><li>Interface Jacob OS</li><li>Presence Engine</li><li>Testes com backend</li></ul>
           </article>
           <article class="card small-card wide-note">
             <p class="card-label">Lembrete importante</p>
-            <p>Você rende melhor pela manhã. Aproveite este horário para trabalho profundo.</p>
+            <p id="reminder-text">Você rende melhor pela manhã. Aproveite este horário para trabalho profundo.</p>
           </article>
         </section>
       </section>
