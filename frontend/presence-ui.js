@@ -1,4 +1,4 @@
-let jacobVoiceEnabled = localStorage.getItem("jacob_voice_enabled") === "true";
+let jacobVoiceEnabled = localStorage.getItem("jacob_voice_enabled") !== "false";
 let currentPremiumAudio = null;
 const PREMIUM_VOICE_URL = "http://127.0.0.1:8000/voice/speak";
 
@@ -28,7 +28,15 @@ function pickPortugueseVoice() {
     || null;
 }
 
-function speakBrowserFallback(text, force = false) {
+function waitForBrowserSpeech(utterance) {
+  return new Promise((resolve) => {
+    utterance.onend = resolve;
+    utterance.onerror = resolve;
+    setTimeout(resolve, Math.max(2500, utterance.text.length * 120));
+  });
+}
+
+async function speakBrowserFallback(text, force = false) {
   if ((!jacobVoiceEnabled && !force) || !("speechSynthesis" in window)) return false;
   window.speechSynthesis.cancel();
   const prepared = text.replaceAll("Jacob", "Jay-cub").replaceAll("Jason", "Jay-son");
@@ -40,7 +48,18 @@ function speakBrowserFallback(text, force = false) {
   utterance.pitch = 0.82;
   utterance.volume = 1;
   window.speechSynthesis.speak(utterance);
+  await waitForBrowserSpeech(utterance);
   return true;
+}
+
+function waitForAudio(audio) {
+  return new Promise((resolve) => {
+    audio.onended = resolve;
+    audio.onerror = resolve;
+    audio.onpause = () => {
+      if (audio.currentTime >= audio.duration - 0.15) resolve();
+    };
+  });
 }
 
 async function speakJacob(text, force = false) {
@@ -61,12 +80,12 @@ async function speakJacob(text, force = false) {
 
     if (!response.ok) throw new Error("premium voice unavailable");
     const payload = await response.json();
-
     if (!payload.audio_base64) throw new Error("fallback voice response");
 
     const audio = new Audio(`data:audio/mp3;base64,${payload.audio_base64}`);
     currentPremiumAudio = audio;
     await audio.play();
+    await waitForAudio(audio);
     return true;
   } catch (error) {
     return speakBrowserFallback(text, force);
@@ -118,7 +137,7 @@ function createPresenceControls() {
     localStorage.setItem("jacob_voice_enabled", String(jacobVoiceEnabled));
     voiceButton.textContent = `Voz: ${jacobVoiceEnabled ? "Ligada" : "Desligada"}`;
     voiceButton.classList.toggle("active", jacobVoiceEnabled);
-    if (jacobVoiceEnabled) await speakJacob("Voice identity activated. Jay-cub is online with Jay-son.", true);
+    if (jacobVoiceEnabled) await speakJacob("Voz do Jacob ativada. A partir de agora, vou falar minhas respostas sempre que possível.", true);
   });
 
   testButton?.addEventListener("click", async () => {
@@ -129,7 +148,7 @@ function createPresenceControls() {
       voiceButton.textContent = "Voz: Ligada";
       voiceButton.classList.add("active");
     }
-    await speakJacob("Good evening, Jay-son. This is Jay-cub. Voice identity test completed.", true);
+    await speakJacob("Boa noite, Jason. Aqui é o Jacob. Teste de voz premium concluído.", true);
   });
 
   document.querySelector("#presence-replay")?.addEventListener("click", () => runPresenceRitual(true));
@@ -159,21 +178,26 @@ async function runPresenceRitual(force = false) {
   const ritual = createPresenceRitual();
   const line = document.querySelector("#presence-line");
   const greeting = presenceGreeting();
-  const sequence = [greeting, "Voice Identity em modo premium.", "Se a API estiver configurada, usarei voz neural.", "Se não estiver, usarei apenas fallback do navegador."];
+  const sequence = [
+    greeting,
+    "Voice Identity está em modo premium.",
+    "Agora vou esperar cada fala terminar antes de avançar.",
+    "Se você quiser usar a voz Will, coloque o Voice ID dela no arquivo de configuração."
+  ];
 
   ritual.classList.remove("hidden");
 
   for (const text of sequence) {
     if (line) line.textContent = text;
     await speakJacob(text);
-    await new Promise((resolve) => setTimeout(resolve, 900));
+    await new Promise((resolve) => setTimeout(resolve, 350));
   }
 
   ritual.classList.add("hidden");
   sessionStorage.setItem("jacob_presence_shown", "true");
 
   if (typeof addMessage === "function") {
-    addMessage("Jacob", `${greeting} Voice Identity 1.0 ativa. Teste a voz premium para validar a experiência.`, "jacob");
+    addMessage("Jacob", `${greeting} Voz configurada para falar sempre que possível.`, "jacob");
   }
 }
 
@@ -181,6 +205,7 @@ if ("speechSynthesis" in window) {
   window.speechSynthesis.onvoiceschanged = pickPortugueseVoice;
 }
 
+localStorage.setItem("jacob_voice_enabled", String(jacobVoiceEnabled));
 loadExtraModules();
 createPresenceControls();
 createPresenceRitual();
