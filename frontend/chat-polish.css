@@ -1,0 +1,112 @@
+/* Chat polish: scrollbar, hierarchy and input size */
+
+html,
+body,
+.messages,
+.full-page-card,
+.right-panel,
+.main-panel {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56,189,248,.75) rgba(2,6,23,.18);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(2,6,23,.18);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(56,189,248,.95), rgba(37,99,235,.82));
+  border-radius: 999px;
+  border: 2px solid rgba(2,6,23,.72);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(125,211,252,1), rgba(59,130,246,.95));
+}
+
+h1,
+#hero-title {
+  font-size: clamp(1.65rem, 2.25vw, 2.8rem) !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.045em !important;
+}
+
+.eyebrow,
+#greeting-eyebrow {
+  font-size: .76rem !important;
+  margin-bottom: 6px !important;
+}
+
+.hero-mission h2,
+#mission-title {
+  font-size: clamp(1.05rem, 1.45vw, 1.55rem) !important;
+  line-height: 1.18 !important;
+}
+
+.hero-mission p,
+#mission-description {
+  font-size: .92rem !important;
+  line-height: 1.48 !important;
+}
+
+.small-card h3,
+#next-action-title {
+  font-size: clamp(.98rem, 1.1vw, 1.18rem) !important;
+  line-height: 1.25 !important;
+}
+
+.presence-and-chat {
+  grid-template-rows: minmax(132px, .28fr) minmax(470px, .72fr) !important;
+}
+
+.conversation-panel {
+  grid-template-rows: auto minmax(285px, 1fr) auto auto !important;
+  padding: clamp(16px, 1.7vw, 24px) !important;
+}
+
+.messages {
+  min-height: 285px !important;
+  padding-right: 8px !important;
+}
+
+.chat-form input,
+#message-input {
+  min-height: 64px !important;
+  font-size: 1rem !important;
+  padding: 0 18px !important;
+  border-radius: 18px !important;
+}
+
+.chat-form button {
+  width: 66px !important;
+  min-width: 66px !important;
+  min-height: 64px !important;
+  border-radius: 18px !important;
+}
+
+@media (max-width: 1080px) {
+  .presence-and-chat {
+    grid-template-rows: minmax(140px, auto) minmax(500px, 1fr) !important;
+  }
+}
+
+@media (max-width: 780px) {
+  h1,
+  #hero-title {
+    font-size: clamp(1.8rem, 8vw, 2.55rem) !important;
+  }
+
+  .conversation-panel {
+    min-height: 520px !important;
+  }
+
+  .messages {
+    min-height: 300px !important;
+  }
+}
