@@ -20,6 +20,7 @@ from jacob_core import __version__
 from jacob_core.core import JacobCore
 from jacob_core.models import Intent, MemoryCategory, MemoryRecord
 from jacob_guardian import JacobGuardian
+from jacob_knowledge import KnowledgeCore, KnowledgeRecord
 
 app = FastAPI(
     title="Jacob Core API",
@@ -41,6 +42,7 @@ cognitive_gateway = CognitiveGateway(core.memory_store)
 guardian = JacobGuardian(core.memory_store)
 timeline = TimelineEngine()
 conversation_history = ConversationHistory()
+knowledge_core = KnowledgeCore()
 
 
 def serialize_memory(memory: MemoryRecord) -> MemoryResponse:
@@ -94,6 +96,24 @@ def list_conversation_messages(limit: int = 50) -> dict:
 def clear_conversation_messages() -> dict:
     conversation_history.clear()
     return {"cleared": True}
+
+
+@app.get("/knowledge")
+def list_knowledge(topic: str | None = None, limit: int = 100) -> dict:
+    return {"records": [record.as_dict() for record in knowledge_core.list_records(topic=topic, limit=limit)]}
+
+
+@app.get("/knowledge/search")
+def search_knowledge(q: str, limit: int = 10) -> dict:
+    return {"records": [record.as_dict() for record in knowledge_core.search(q, limit=limit)]}
+
+
+@app.post("/knowledge")
+def create_knowledge(title: str, summary: str, topic: str = "general", source: str = "manual", confidence: float = 0.7) -> dict:
+    record = knowledge_core.add_record(
+        KnowledgeRecord(title=title, summary=summary, topic=topic, source=source, confidence=confidence)
+    )
+    return record.as_dict()
 
 
 @app.post("/chat", response_model=ChatResponse)
