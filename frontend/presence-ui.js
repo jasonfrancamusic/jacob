@@ -17,6 +17,21 @@ function speakJacob(text) {
   window.speechSynthesis.speak(utterance);
 }
 
+function loadDevelopmentMode() {
+  if (!document.querySelector('link[href="development-mode.css"]')) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "development-mode.css";
+    document.head.appendChild(link);
+  }
+
+  if (!document.querySelector('script[src="development-mode.js"]')) {
+    const script = document.createElement("script");
+    script.src = "development-mode.js";
+    document.body.appendChild(script);
+  }
+}
+
 function createPresenceControls() {
   const controls = document.createElement("div");
   controls.className = "presence-controls";
@@ -66,7 +81,7 @@ async function runPresenceRitual(force = false) {
   const sequence = [
     greeting,
     "Eu estava preparando o ambiente.",
-    "Guardian, Timeline e Memory Engine estão prontos para evoluir.",
+    "Guardian, Timeline, Memory e Development Mode estão prontos para evoluir.",
     "Vamos continuar de onde paramos."
   ];
 
@@ -86,6 +101,7 @@ async function runPresenceRitual(force = false) {
   }
 }
 
+loadDevelopmentMode();
 createPresenceControls();
 createPresenceRitual();
 setTimeout(() => runPresenceRitual(false), 500);
