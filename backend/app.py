@@ -22,6 +22,7 @@ from jacob_core.core import JacobCore
 from jacob_core.models import Intent, MemoryCategory, MemoryRecord
 from jacob_guardian import JacobGuardian
 from jacob_knowledge import KnowledgeCore, KnowledgeRecord
+from jacob_research import ResearchEngine
 from jacob_voice import VoiceEngine
 
 
@@ -51,6 +52,7 @@ timeline = TimelineEngine()
 conversation_history = ConversationHistory()
 knowledge_core = KnowledgeCore()
 voice_engine = VoiceEngine()
+research_engine = ResearchEngine()
 
 
 def serialize_memory(memory: MemoryRecord) -> MemoryResponse:
@@ -91,6 +93,12 @@ def briefing(partner_name: str = "Jason") -> dict:
 @app.post("/voice/speak")
 def speak(request: VoiceRequest) -> dict:
     return voice_engine.synthesize(request.text).as_dict()
+
+
+@app.get("/research/search")
+def research_search(q: str) -> dict:
+    results = research_engine.search(q)
+    return {"query": q, "results": [result.as_dict() for result in results]}
 
 
 @app.get("/guardian")
@@ -143,12 +151,19 @@ def chat(request: ChatRequest) -> ChatResponse:
     context = recent_conversation_context(limit=12)
     conversation_history.add_message("user", request.message)
 
+    research_context = ""
+    research_results = []
+    if research_engine.should_research(request.message):
+        query = research_engine.normalize_query(request.message, context)
+        research_results = research_engine.search(query)
+        research_context = "\n\nPesquisa ao vivo disponível para esta pergunta:\n" + research_engine.format_results(research_results)
+
     daily_briefing = brain.daily_briefing(partner_name=request.partner_name)
     cognitive_response = cognitive_gateway.answer(
         partner_name=request.partner_name,
         message=request.message,
         briefing=daily_briefing,
-        conversation_context=context,
+        conversation_context=context + research_context,
     )
 
     conversation_history.add_message("assistant", cognitive_response.text)
@@ -161,12 +176,14 @@ def chat(request: ChatRequest) -> ChatResponse:
             helped=True,
             should_follow_up=True,
             suggested_memory=None,
-            notes="Response generated through Cognitive Gateway with recent conversation context.",
+            notes="Response generated through Cognitive Gateway with recent context and optional live research.",
         ),
         debug={
             "provider": cognitive_response.provider,
             "model": cognitive_response.model,
             "used_fallback": cognitive_response.used_fallback,
+            "research_used": bool(research_results),
+            "research_results": [result.as_dict() for result in research_results],
         },
     )
 
