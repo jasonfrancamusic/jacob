@@ -109,6 +109,7 @@ function loadAssetOnce(type, url) {
 
 function loadExtraModules() {
   loadAssetOnce("css", "premium-polish.css");
+  loadAssetOnce("css", "chat-polish.css");
   loadAssetOnce("css", "development-mode.css");
   loadAssetOnce("js", "development-mode.js");
   loadAssetOnce("css", "conversation-history.css");
