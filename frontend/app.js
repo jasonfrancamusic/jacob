@@ -2,6 +2,8 @@ const API_BASE_URL = "http://127.0.0.1:8000";
 const CHAT_URL = `${API_BASE_URL}/chat`;
 const HEALTH_URL = `${API_BASE_URL}/health`;
 const BRIEFING_URL = `${API_BASE_URL}/briefing?partner_name=Jason`;
+const GUARDIAN_URL = `${API_BASE_URL}/guardian`;
+const TIMELINE_URL = `${API_BASE_URL}/timeline`;
 
 const BOA_VISTA = { latitude: 2.8235, longitude: -60.6758, label: "Boa Vista, RR" };
 
@@ -116,6 +118,142 @@ async function checkBackendHealth() {
   }
 }
 
+function ensureGuardianPreviewCard() {
+  let card = document.querySelector("#guardian-preview-card");
+  if (card) return card;
+
+  const missionGrid = document.querySelector(".mission-grid");
+  if (!missionGrid) return null;
+
+  card = document.createElement("article");
+  card.id = "guardian-preview-card";
+  card.className = "card small-card guardian-card";
+  card.innerHTML = `
+    <p class="card-label">Guardian</p>
+    <h3 id="guardian-summary">Guardian aguardando leitura...</h3>
+    <ul id="guardian-preview-list"><li>Carregando observações...</li></ul>
+  `;
+  missionGrid.appendChild(card);
+  return card;
+}
+
+function ensureTimelinePage() {
+  let page = document.querySelector("#page-timeline");
+  if (!page) {
+    page = document.createElement("section");
+    page.className = "page";
+    page.id = "page-timeline";
+    page.innerHTML = `
+      <article class="card full-page-card">
+        <p class="card-label">Timeline</p>
+        <h2>Linha do tempo do Jacob OS</h2>
+        <p>Os marcos importantes do projeto aparecem aqui automaticamente pelo Timeline Engine.</p>
+        <div id="timeline-list" class="timeline-list"><p>Carregando timeline...</p></div>
+      </article>
+    `;
+    document.querySelector(".main-panel")?.appendChild(page);
+  }
+
+  if (!document.querySelector('[data-page="timeline"]')) {
+    const timelineButton = document.createElement("button");
+    timelineButton.className = "nav-item";
+    timelineButton.dataset.page = "timeline";
+    timelineButton.innerHTML = "◷ <span>Timeline</span>";
+    const nav = document.querySelector(".nav-menu");
+    const lifeButton = document.querySelector('[data-page="life"]');
+    nav?.insertBefore(timelineButton, lifeButton || null);
+    timelineButton.addEventListener("click", () => setPage("timeline"));
+  }
+}
+
+function ensureGuardianPage() {
+  let page = document.querySelector("#page-guardian");
+  if (!page) {
+    page = document.createElement("section");
+    page.className = "page";
+    page.id = "page-guardian";
+    page.innerHTML = `
+      <article class="card full-page-card">
+        <p class="card-label">Guardian</p>
+        <h2>Observador silencioso</h2>
+        <p>O Guardian prepara observações para o Brain antes de você conversar com Jacob.</p>
+        <div id="guardian-list" class="guardian-list"><p>Carregando Guardian...</p></div>
+      </article>
+    `;
+    document.querySelector(".main-panel")?.appendChild(page);
+  }
+
+  if (!document.querySelector('[data-page="guardian"]')) {
+    const guardianButton = document.createElement("button");
+    guardianButton.className = "nav-item";
+    guardianButton.dataset.page = "guardian";
+    guardianButton.innerHTML = "◆ <span>Guardian</span>";
+    const nav = document.querySelector(".nav-menu");
+    const settingsButton = document.querySelector('[data-page="settings"]');
+    nav?.insertBefore(guardianButton, settingsButton || null);
+    guardianButton.addEventListener("click", () => setPage("guardian"));
+  }
+}
+
+async function loadGuardian() {
+  ensureGuardianPreviewCard();
+  ensureGuardianPage();
+
+  try {
+    const response = await fetch(GUARDIAN_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error(`Guardian error: ${response.status}`);
+    const guardian = await response.json();
+    const observations = guardian.observations || [];
+
+    setText("#guardian-summary", guardian.summary || "Guardian ativo.");
+
+    const preview = document.querySelector("#guardian-preview-list");
+    if (preview) {
+      preview.innerHTML = observations.slice(0, 2).map((item) => `<li>${item.title}</li>`).join("") || "<li>Nenhuma observação.</li>";
+    }
+
+    const full = document.querySelector("#guardian-list");
+    if (full) {
+      full.innerHTML = observations.map((item) => `
+        <article class="timeline-item">
+          <span>${item.category} • ${item.priority}</span>
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+        </article>
+      `).join("") || "<p>Nenhuma observação disponível.</p>";
+    }
+  } catch (error) {
+    setText("#guardian-summary", "Guardian indisponível. Verifique o backend.");
+  }
+}
+
+async function loadTimeline() {
+  ensureTimelinePage();
+
+  try {
+    const response = await fetch(TIMELINE_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error(`Timeline error: ${response.status}`);
+    const payload = await response.json();
+    const events = payload.events || [];
+    const list = document.querySelector("#timeline-list");
+    if (!list) return;
+
+    list.innerHTML = events.map((event) => {
+      const date = new Date(event.created_at).toLocaleDateString("pt-BR");
+      return `
+        <article class="timeline-item">
+          <span>${date} • ${event.category}</span>
+          <h3>${event.title}</h3>
+          <p>${event.description}</p>
+        </article>
+      `;
+    }).join("") || "<p>Nenhum evento na timeline ainda.</p>";
+  } catch (error) {
+    const list = document.querySelector("#timeline-list");
+    if (list) list.innerHTML = "<p>Não consegui carregar a timeline. Verifique o backend.</p>";
+  }
+}
+
 async function loadBriefing() {
   const isOnline = await checkBackendHealth();
   if (!isOnline) return;
@@ -139,6 +277,8 @@ async function loadBriefing() {
     if (focusList && Array.isArray(briefing.focus_items)) {
       focusList.innerHTML = briefing.focus_items.map((item) => `<li>${item}</li>`).join("");
     }
+
+    if (briefing.guardian) await loadGuardian();
   } catch (error) {
     console.error(error);
   }
@@ -194,6 +334,9 @@ function setPage(pageName) {
   document.querySelectorAll(".nav-item").forEach((item) => {
     item.classList.toggle("active", item.dataset.page === pageName);
   });
+
+  if (pageName === "timeline") loadTimeline();
+  if (pageName === "guardian") loadGuardian();
 }
 
 function setAvatarMode(mode) {
@@ -224,8 +367,12 @@ document.querySelectorAll("[data-page-jump]").forEach((button) => {
 document.querySelector("#sphere-mode")?.addEventListener("click", () => setAvatarMode("sphere"));
 document.querySelector("#human-mode")?.addEventListener("click", () => setAvatarMode("human"));
 
+ensureTimelinePage();
+ensureGuardianPage();
 updateLocalTimeAndGreeting();
 loadWeather();
 loadBriefing();
+loadTimeline();
+loadGuardian();
 setInterval(updateLocalTimeAndGreeting, 10000);
 setInterval(checkBackendHealth, 5000);
