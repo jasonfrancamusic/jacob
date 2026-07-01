@@ -1,6 +1,7 @@
 const API_BASE_URL = "http://127.0.0.1:8000";
 const CHAT_URL = `${API_BASE_URL}/chat`;
 const HEALTH_URL = `${API_BASE_URL}/health`;
+const BRIEFING_URL = `${API_BASE_URL}/briefing?partner_name=Jason`;
 
 const form = document.querySelector("#chat-form");
 const input = document.querySelector("#message-input");
@@ -12,6 +13,11 @@ const connectionDetail = document.querySelector("#connection-detail");
 const connectionHealth = document.querySelector("#connection-health");
 
 let backendOnline = false;
+
+function setText(selector, value) {
+  const element = document.querySelector(selector);
+  if (element && value) element.textContent = value;
+}
 
 function addMessage(author, text, type) {
   const article = document.createElement("article");
@@ -58,8 +64,39 @@ async function checkBackendHealth() {
   try {
     const response = await fetch(HEALTH_URL, { cache: "no-store" });
     setConnectionStatus(response.ok);
+    return response.ok;
   } catch (error) {
     setConnectionStatus(false);
+    return false;
+  }
+}
+
+async function loadBriefing() {
+  const isOnline = await checkBackendHealth();
+  if (!isOnline) return;
+
+  try {
+    const response = await fetch(BRIEFING_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error(`Briefing error: ${response.status}`);
+    const briefing = await response.json();
+
+    setText("#hero-title", briefing.greeting);
+    setText("#mission-title", briefing.mission_title);
+    setText("#mission-description", briefing.mission_description);
+    setText("#mission-progress-label", `${briefing.mission_progress}%`);
+    setText("#next-action-title", briefing.next_action?.title);
+    setText("#next-action-priority", `● Prioridade ${briefing.next_action?.priority || "alta"}`);
+    setText("#reminder-text", briefing.reminder);
+
+    const progressBar = document.querySelector("#mission-progress-bar");
+    if (progressBar) progressBar.style.width = `${briefing.mission_progress}%`;
+
+    const focusList = document.querySelector("#focus-list");
+    if (focusList && Array.isArray(briefing.focus_items)) {
+      focusList.innerHTML = briefing.focus_items.map((item) => `<li>${item}</li>`).join("");
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -117,5 +154,5 @@ quickActions.forEach((button) => {
   });
 });
 
-checkBackendHealth();
+loadBriefing();
 setInterval(checkBackendHealth, 5000);
