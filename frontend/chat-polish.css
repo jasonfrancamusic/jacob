@@ -1,33 +1,32 @@
-/* Chat polish: scrollbar, hierarchy and input size */
+/* System-wide visual polish: scrollbar, hierarchy and chat layout */
 
-html,
-body,
-.messages,
-.full-page-card,
-.right-panel,
-.main-panel {
+* {
   scrollbar-width: thin;
   scrollbar-color: rgba(56,189,248,.75) rgba(2,6,23,.18);
 }
 
-::-webkit-scrollbar {
+*::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
   background: rgba(2,6,23,.18);
   border-radius: 999px;
 }
 
-::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, rgba(56,189,248,.95), rgba(37,99,235,.82));
   border-radius: 999px;
   border: 2px solid rgba(2,6,23,.72);
 }
 
-::-webkit-scrollbar-thumb:hover {
+*::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, rgba(125,211,252,1), rgba(59,130,246,.95));
+}
+
+#greeting-eyebrow {
+  display: none !important;
 }
 
 h1,
@@ -35,12 +34,7 @@ h1,
   font-size: clamp(1.65rem, 2.25vw, 2.8rem) !important;
   line-height: 1.05 !important;
   letter-spacing: -0.045em !important;
-}
-
-.eyebrow,
-#greeting-eyebrow {
-  font-size: .76rem !important;
-  margin-bottom: 6px !important;
+  margin-top: 0 !important;
 }
 
 .hero-mission h2,
@@ -62,16 +56,17 @@ h1,
 }
 
 .presence-and-chat {
-  grid-template-rows: minmax(132px, .28fr) minmax(470px, .72fr) !important;
+  grid-template-rows: minmax(132px, .25fr) minmax(520px, .75fr) !important;
 }
 
 .conversation-panel {
-  grid-template-rows: auto minmax(285px, 1fr) auto auto !important;
+  grid-template-rows: auto minmax(300px, 1fr) auto auto auto !important;
   padding: clamp(16px, 1.7vw, 24px) !important;
+  overflow: hidden !important;
 }
 
 .messages {
-  min-height: 285px !important;
+  min-height: 300px !important;
   padding-right: 8px !important;
 }
 
@@ -90,9 +85,13 @@ h1,
   border-radius: 18px !important;
 }
 
+.quick-actions {
+  margin-top: 10px !important;
+}
+
 @media (max-width: 1080px) {
   .presence-and-chat {
-    grid-template-rows: minmax(140px, auto) minmax(500px, 1fr) !important;
+    grid-template-rows: minmax(140px, auto) minmax(560px, 1fr) !important;
   }
 }
 
@@ -103,10 +102,10 @@ h1,
   }
 
   .conversation-panel {
-    min-height: 520px !important;
+    min-height: 580px !important;
   }
 
   .messages {
-    min-height: 300px !important;
+    min-height: 310px !important;
   }
 }
