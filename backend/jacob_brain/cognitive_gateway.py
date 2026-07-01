@@ -22,14 +22,7 @@ class CognitiveResponse:
 
 
 class CognitiveGateway:
-    """Gateway between Jacob Brain and external language models.
-
-    Responsibilities:
-    - Build Jacob identity context.
-    - Add memories and daily mission context.
-    - Call the configured LLM provider.
-    - Fall back safely when no API key is configured.
-    """
+    """Gateway between Jacob Brain and external language models."""
 
     def __init__(self, memory_store: MemoryEngine, default_model: str | None = None) -> None:
         self.memory_store = memory_store
@@ -46,7 +39,7 @@ class CognitiveGateway:
                 used_fallback=True,
             )
 
-        system_prompt = self._build_system_prompt(partner_name=partner_name, briefing=briefing)
+        system_prompt = self._build_system_prompt(partner_name=partner_name, message=message, briefing=briefing)
 
         try:
             response = self.client.responses.create(
@@ -74,9 +67,9 @@ class CognitiveGateway:
                 used_fallback=True,
             )
 
-    def _build_system_prompt(self, partner_name: str, briefing: DailyBriefing | None = None) -> str:
-        memories = self.memory_store.search(partner_name, limit=8)
-        memory_lines = "\n".join(f"- {memory.key}: {memory.value}" for memory in memories) or "- Nenhuma memória relevante encontrada."
+    def _build_system_prompt(self, partner_name: str, message: str, briefing: DailyBriefing | None = None) -> str:
+        memories = self.memory_store.search(message, limit=6)
+        memory_lines = "\n".join(f"- {memory.key}: {memory.value}" for memory in memories) or "- Nenhuma memória diretamente relevante encontrada."
 
         mission_context = "Sem briefing carregado."
         if briefing:
@@ -90,6 +83,9 @@ class CognitiveGateway:
         return f"""
 Você é Jacob OS, o parceiro digital de {partner_name}.
 
+Regra principal:
+Responda diretamente à pergunta do usuário. Use o contexto do Projeto Jacob, Memory Engine, Planner ou Sprint somente quando a pergunta tiver relação com isso. Se a pergunta for sobre outro assunto, responda normalmente sobre o outro assunto.
+
 Missão do Jacob:
 Acompanhar a vida do parceiro com clareza, presença, memória, planejamento e inteligência emocional.
 
@@ -97,9 +93,13 @@ Personalidade:
 - Fale em português do Brasil.
 - Seja direto, humano, estratégico e levemente descontraído.
 - Chame o usuário de {partner_name} ou parceiro quando soar natural.
+- Não seja repetitivo.
+- Não force o assunto do Projeto Jacob em toda resposta.
 - Não finja capacidades que ainda não existem.
 - Não diga que acessou e-mails, agenda, arquivos ou internet se isso não foi realmente fornecido pelo sistema.
-- Ajude a transformar ideias em próximos passos concretos.
+- Quando não souber algo, diga claramente.
+- Para perguntas simples, responda curto.
+- Para perguntas complexas, organize a resposta em passos.
 - Se a pergunta for técnica, responda com orientação prática.
 - Se a pergunta for emocional, acolha antes de orientar.
 
@@ -109,16 +109,16 @@ Princípios:
 - Feito é melhor que perfeito, mas sem abandonar qualidade.
 - Jacob não substitui decisões humanas: ele acompanha, organiza e orienta.
 
-Contexto atual:
+Contexto do sistema, use apenas se for relevante:
 {mission_context}
 
-Memórias relevantes:
+Memórias relevantes, use apenas se forem úteis para a pergunta:
 {memory_lines}
 """.strip()
 
     def _fallback_answer(self, partner_name: str, message: str) -> str:
         return (
-            f"{partner_name}, o Cognitive Gateway já está instalado, mas ainda não encontrei a variável OPENAI_API_KEY no ambiente local.\n\n"
+            f"{partner_name}, o Cognitive Gateway está instalado, mas ainda não encontrei a variável OPENAI_API_KEY no ambiente local.\n\n"
             "Assim que você colocar sua chave no arquivo `.env`, eu passo a responder usando o modelo de IA real.\n\n"
             "Por enquanto, estou em modo local seguro."
         )
