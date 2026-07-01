@@ -14,6 +14,7 @@ from api.schemas import (
 )
 from jacob_brain import JacobBrain
 from jacob_brain.cognitive_gateway import CognitiveGateway
+from jacob_brain.conversation_history import ConversationHistory
 from jacob_brain.timeline import TimelineEngine, TimelineEvent
 from jacob_core import __version__
 from jacob_core.core import JacobCore
@@ -39,6 +40,7 @@ brain = JacobBrain(core.memory_store)
 cognitive_gateway = CognitiveGateway(core.memory_store)
 guardian = JacobGuardian(core.memory_store)
 timeline = TimelineEngine()
+conversation_history = ConversationHistory()
 
 
 def serialize_memory(memory: MemoryRecord) -> MemoryResponse:
@@ -83,14 +85,29 @@ def create_timeline_event(title: str, description: str, category: str = "develop
     return event.as_dict()
 
 
+@app.get("/conversations")
+def list_conversation_messages(limit: int = 50) -> dict:
+    return {"messages": [message.as_dict() for message in conversation_history.list_messages(limit=limit)]}
+
+
+@app.delete("/conversations")
+def clear_conversation_messages() -> dict:
+    conversation_history.clear()
+    return {"cleared": True}
+
+
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest) -> ChatResponse:
+    conversation_history.add_message("user", request.message)
+
     daily_briefing = brain.daily_briefing(partner_name=request.partner_name)
     cognitive_response = cognitive_gateway.answer(
         partner_name=request.partner_name,
         message=request.message,
         briefing=daily_briefing,
     )
+
+    conversation_history.add_message("assistant", cognitive_response.text)
 
     return ChatResponse(
         text=cognitive_response.text,
